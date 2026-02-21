@@ -1,6 +1,6 @@
-#include <stdlib.h>
-#include <assert.h>
 #include "bst_sized.h"
+#include <assert.h>
+#include <stdlib.h>
 
 typedef struct BSTNode {
     int value;
