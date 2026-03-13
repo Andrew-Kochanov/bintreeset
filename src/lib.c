@@ -43,7 +43,7 @@ int bstInsert(BST* tree, int value)
         return ENOMEM;
     }
 
-    *newNode = {
+    *newNode = (BSTNode) {
         .value = value,
         .parent = parent,
         .left = nullptr,
@@ -88,7 +88,7 @@ void bstNodeFree(BSTNode** node)
 void bstFree(BST* tree)
 {
     tree->cardinality = 0;
-    bstNodeFree(tree->root);
+    bstNodeFree(&tree->root);
     tree->root = nullptr;
 }
 
@@ -120,7 +120,7 @@ void bstPreorderInner(const BSTNode* node)
     bstPreorderInner(node->right);
 }
 
-void bstPostorder(const BST* tree)
+void bstPreorder(const BST* tree)
 {
     bstPreorderInner(tree->root);
     printf("\n");
