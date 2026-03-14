@@ -188,3 +188,76 @@ int bstMax(const BST* tree)
 
     return node->value;
 }
+
+void deleteNode(BST* tree, int value){
+
+    // node search
+    BSTNode current = BST->root;
+    while(current != NULL){
+        if (current->value == value){
+            break;
+        }
+        if (current->value > value){
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+
+    // There is no such value.
+    if (current == NULL){
+        return;
+    }
+
+    // node == leaf
+    if (current->left == NULL && current->right == NULL){
+        BSTNode parent = current->parent;
+        if(parent->value > current->value){
+            parent->left = NULL;
+        } else{
+            parent->right = NULL;
+        }
+        free(current);
+        return;
+    }
+
+    // the node has 2 children
+    if (current->left != NULL && current->right != NULL){
+        // finding the largest node in the left subtree
+        BSTNode largest = current->left;
+        while(largest->right != NULL){
+            largest = largest->right;
+        }
+        current->value = largest->value;
+        BSTNode parent = largest->parent;
+        if (largest->left != NULL){
+            parent->right = largest->left;
+        } else{
+            parent->right = NULL;
+        }
+        free(largest);
+        return;
+    }
+
+    // the node has only left child or only right child
+    if (current->left != NULL){
+        BSTNode parent = current->parent;
+        if (parent->value < current->value){
+            parent->right = current->left;
+        } else {
+            parent->left = current->left;
+        }
+        free(current);
+        return;
+    } else {
+        BSTNode parent = current->parent;
+        if (parent->value < current->value){
+            parent->right = current->right;
+        } else {
+            parent->left = current->right;
+        }
+        free(current);
+        return;
+    }
+
+}
