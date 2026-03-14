@@ -195,11 +195,11 @@ typedef struct BSTIterator {
     BSTNode* current;
 } BSTIterator;
 
-static_assert(sizeof(BSTIterator) == sizeof(BStIteratorStandin__));
+static_assert(sizeof(BSTIterator) == sizeof(BSTIteratorStandin__));
 
 BSTIterator bstIteratorInit(BST* tree)
 {
-    if (tree->nullptr) {
+    if (tree->root == nullptr) {
         return (BSTIterator) {
             .tree = tree,
             .current = nullptr
@@ -223,7 +223,7 @@ bool bstIteratorHasNext(const BSTIterator* iter)
     return iter->current != nullptr;
 }
 
-int* bstNextNodeInorder(BSTNode* node)
+BSTNode* bstNextNodeInorder(BSTNode* node)
 {
     if (node->right != nullptr) {
         node = node->right;
@@ -249,7 +249,7 @@ int* bstIteratorNext(BSTIterator* iter)
     }
 
     int* value = &iter->current->value;
-    iter->current = bstNodeNextInorder(iter->current);
+    iter->current = bstNextNodeInorder(iter->current);
 
     return value;
 }
