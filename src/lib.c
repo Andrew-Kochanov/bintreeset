@@ -13,14 +13,14 @@ typedef struct BSTNode {
     struct BSTNode* right;
 } BSTNode;
 
-// static_assert(sizeof(BSTNode) == sizeof(BSTNodeStandin__));
+static_assert(sizeof(BSTNode) == sizeof(BSTNodeStandin__));
 
 typedef struct BST {
     BSTNode* root;
     size_t cardinality;
 } BST;
 
-// static_assert(sizeof(BST) == sizeof(BSTStandin__));
+static_assert(sizeof(BST) == sizeof(BSTStandin__));
 
 int bstInsert(BST* tree, int value)
 {
