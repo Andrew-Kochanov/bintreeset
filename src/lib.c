@@ -190,6 +190,77 @@ int bstMax(const BST* tree)
     return node->value;
 }
 
+// a vector of node pointers
+typedef struct BSTIterator {
+    BST* tree;
+    BSTNode* current;
+} BSTIterator;
+
+static_assert(sizeof(BSTIterator) == sizeof(BSTIteratorStandin__));
+
+BSTIterator bstIteratorInit(BST* tree)
+{
+    if (tree->root == nullptr) {
+        return (BSTIterator) {
+            .tree = tree,
+            .current = nullptr
+        };
+    }
+
+    BSTNode* node = tree->root;
+
+    while (node->left != nullptr) {
+        node = node->left;
+    }
+
+    return (BSTIterator) {
+        .tree = tree,
+        .current = node
+    };
+}
+
+bool bstIteratorHasNext(const BSTIterator* iter)
+{
+    return iter->current != nullptr;
+}
+
+BSTNode* bstNextNodeInorder(BSTNode* node)
+{
+    if (node->right != nullptr) {
+        node = node->right;
+
+        while (node->left != nullptr) {
+            node = node->left;
+        }
+
+        return node;
+    }
+
+    while (node->parent != nullptr && node == node->parent->right) {
+        node = node->parent;
+    }
+
+    return node->parent;
+}
+
+int* bstIteratorNext(BSTIterator* iter)
+{
+    if (iter->current == nullptr) {
+        return nullptr;
+    }
+
+    int* value = &iter->current->value;
+    iter->current = bstNextNodeInorder(iter->current);
+
+    return value;
+}
+
+void bstIteratorFree(BSTIterator* iter)
+{
+    // nothing to free
+    return;
+}
+
 void deleteNode(BST* tree, int value)
 {
     // node search
