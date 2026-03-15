@@ -191,13 +191,14 @@ int bstMax(const BST* tree)
 
 void deleteNode(BST* tree, int value)
 {
-
     // node search
     BSTNode* current = tree->root;
-    while (current != NULL) {
+    
+    while (current != nullptr) {
         if (current->value == value) {
             break;
         }
+        
         if (current->value > value) {
             current = current->left;
         } else {
@@ -206,65 +207,79 @@ void deleteNode(BST* tree, int value)
     }
 
     // There is no such value.
-    if (current == NULL) {
+    if (current == nullptr) {
         return;
     }
 
     // node == leaf
-    if (current->left == NULL && current->right == NULL) {
+    if (current->left == nullptr && current->right == nullptr) {
         BSTNode* parent = current->parent;
+        
         if (parent->value > current->value) {
-            parent->left = NULL;
+            parent->left = nullptr;
         } else {
-            parent->right = NULL;
+            parent->right = nullptr;
         }
+        
         free(current);
         tree->cardinality--;
+        
         return;
     }
 
     // the node has 2 children
-    if (current->left != NULL && current->right != NULL) {
+    if (current->left != nullptr && current->right != nullptr) {
         // finding the largest node in the left subtree
         BSTNode* largest = current->left;
-        while (largest->right != NULL) {
+        
+        while (largest->right != nullptr) {
             largest = largest->right;
         }
+        
         current->value = largest->value;
         BSTNode* parent = largest->parent;
-        if (largest->left != NULL) {
+        
+        if (largest->left != nullptr) {
             parent->right = largest->left;
             largest->left->parent = parent;
         } else {
-            parent->right = NULL;
+            parent->right = nullptr;
         }
+        
         free(largest);
         tree->cardinality--;
+        
         return;
     }
 
     // the node has only left child or only right child
-    if (current->left != NULL) {
+    if (current->left != nullptr) {
         BSTNode* parent = current->parent;
+        
         if (parent->value < current->value) {
             parent->right = current->left;
         } else {
             parent->left = current->left;
         }
+        
         current->left->parent = parent;
         free(current);
         tree->cardinality--;
+        
         return;
     } else {
         BSTNode* parent = current->parent;
+        
         if (parent->value < current->value) {
             parent->right = current->right;
         } else {
             parent->left = current->right;
         }
+        
         current->right->parent = parent;
         free(current);
         tree->cardinality--;
+        
         return;
     }
 }
