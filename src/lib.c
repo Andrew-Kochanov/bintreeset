@@ -261,8 +261,9 @@ void bstIteratorFree(BSTIterator* iter)
     return;
 }
 
-void deleteNode(BST* tree, int value)
+void bstRemove(BST* tree, int value)
 {
+
     // node search
     BSTNode* current = tree->root;
 
@@ -287,7 +288,10 @@ void deleteNode(BST* tree, int value)
     if (current->left == nullptr && current->right == nullptr) {
         BSTNode* parent = current->parent;
 
-        if (parent->value > current->value) {
+        if (parent == nullptr) {
+            tree->root = nullptr;
+        }
+        if (parent->left == current) {
             parent->left = nullptr;
         } else {
             parent->right = nullptr;
@@ -310,12 +314,17 @@ void deleteNode(BST* tree, int value)
 
         current->value = largest->value;
         BSTNode* parent = largest->parent;
+        BSTNode* child = largest->left;
 
-        if (largest->left != nullptr) {
-            parent->right = largest->left;
-            largest->left->parent = parent;
+        if (parent->left == largest) {
+            parent->left = child;
         } else {
-            parent->right = nullptr;
+            parent->right = child;
+        }
+
+        if (child != NULL) {
+            parent->right = largest->left;
+            child->parent = parent;
         }
 
         free(largest);
@@ -325,35 +334,25 @@ void deleteNode(BST* tree, int value)
     }
 
     // the node has only left child or only right child
-    if (current->left != nullptr) {
-        BSTNode* parent = current->parent;
+    BSTNode* child = (current->left != NULL) ? current->left : current->right;
+    BSTNode* parent = current->parent;
 
-        if (parent->value < current->value) {
-            parent->right = current->left;
-        } else {
-            parent->left = current->left;
-        }
-
-        current->left->parent = parent;
-        free(current);
-        tree->cardinality--;
-
-        return;
+    if (parent == NULL) {
+        tree->root = child;
+        child->parent = NULL;
     } else {
-        BSTNode* parent = current->parent;
-
-        if (parent->value < current->value) {
-            parent->right = current->right;
+        if (parent->right == current) {
+            parent->right = child;
         } else {
-            parent->left = current->right;
+            parent->left = child;
         }
-
-        current->right->parent = parent;
-        free(current);
-        tree->cardinality--;
-
-        return;
+        child->parent = parent;
     }
+
+    free(current);
+    tree->cardinality--;
+    
+    return;
 }
 
 void bstMergeInner(const BSTNode* node, BST* tree)
