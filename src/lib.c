@@ -1,6 +1,7 @@
 #include "bst_sized.h"
 #include <assert.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -258,4 +259,159 @@ void bstIteratorFree(BSTIterator* iter)
 {
     // nothing to free
     return;
+}
+
+void deleteNode(BST* tree, int value)
+{
+    // node search
+    BSTNode* current = tree->root;
+
+    while (current != nullptr) {
+        if (current->value == value) {
+            break;
+        }
+
+        if (current->value > value) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+
+    // There is no such value.
+    if (current == nullptr) {
+        return;
+    }
+
+    // node == leaf
+    if (current->left == nullptr && current->right == nullptr) {
+        BSTNode* parent = current->parent;
+
+        if (parent->value > current->value) {
+            parent->left = nullptr;
+        } else {
+            parent->right = nullptr;
+        }
+
+        free(current);
+        tree->cardinality--;
+
+        return;
+    }
+
+    // the node has 2 children
+    if (current->left != nullptr && current->right != nullptr) {
+        // finding the largest node in the left subtree
+        BSTNode* largest = current->left;
+
+        while (largest->right != nullptr) {
+            largest = largest->right;
+        }
+
+        current->value = largest->value;
+        BSTNode* parent = largest->parent;
+
+        if (largest->left != nullptr) {
+            parent->right = largest->left;
+            largest->left->parent = parent;
+        } else {
+            parent->right = nullptr;
+        }
+
+        free(largest);
+        tree->cardinality--;
+
+        return;
+    }
+
+    // the node has only left child or only right child
+    if (current->left != nullptr) {
+        BSTNode* parent = current->parent;
+
+        if (parent->value < current->value) {
+            parent->right = current->left;
+        } else {
+            parent->left = current->left;
+        }
+
+        current->left->parent = parent;
+        free(current);
+        tree->cardinality--;
+
+        return;
+    } else {
+        BSTNode* parent = current->parent;
+
+        if (parent->value < current->value) {
+            parent->right = current->right;
+        } else {
+            parent->left = current->right;
+        }
+
+        current->right->parent = parent;
+        free(current);
+        tree->cardinality--;
+
+        return;
+    }
+}
+
+void bstMergeInner(const BSTNode* node, BST* tree)
+{
+    if (node == nullptr) {
+        return;
+    }
+
+    bstInsert(tree, node->value);
+    bstMergeInner(node->left, tree);
+    bstMergeInner(node->right, tree);
+}
+
+BST bstMerge(const BST* tree1, const BST* tree2)
+{
+    BST tree = { .root = nullptr, .cardinality = 0 };
+    bstMergeInner(tree1->root, &tree);
+    bstMergeInner(tree2->root, &tree);
+    return tree;
+}
+
+int bstKthMinInner(const BSTNode* node, int* k)
+{
+    if (node == nullptr) {
+        return 0;
+    }
+
+    bstKthMinInner(node->left, k);
+    (*k)--;
+    if (*k == 0) {
+        return node->value;
+    }
+    return bstKthMinInner(node->right, k);
+}
+
+int bstKthMin(const BST* tree, int k)
+{
+    if ((bstSize(tree) < k) || (k <= 0)) {
+        return 0;
+    }
+    return bstKthMinInner(tree->root, &k);
+}
+
+bool bstIsValidInner(BSTNode* node, int min, int max)
+{
+    if (node == nullptr) {
+        return true;
+    }
+    if (node->value <= min || node->value >= max) {
+        return false;
+    }
+    return bstIsValidInner(node->left, min, node->value) && bstIsValidInner(node->right, node->value, max);
+}
+
+bool bstIsValid(const BST* tree)
+{
+    if (tree->root == nullptr) {
+        return true;
+    }
+    return bstIsValidInner(tree->root, INT_MIN, INT_MAX);
 }
