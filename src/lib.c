@@ -351,7 +351,7 @@ void bstRemove(BST* tree, int value)
 
     free(current);
     tree->cardinality--;
-    
+
     return;
 }
 
