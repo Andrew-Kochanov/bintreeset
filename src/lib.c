@@ -1,10 +1,10 @@
 #include "bst_sized.h"
 #include <assert.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 
 typedef struct BSTNode {
     int value;
