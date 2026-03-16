@@ -76,7 +76,7 @@ bool bstContains(BST* tree, int value)
 
 void bstNodeFree(BSTNode** node)
 {
-    if (node == nullptr) {
+    if (*node == nullptr) {
         return;
     }
 
