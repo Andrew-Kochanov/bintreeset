@@ -261,7 +261,7 @@ void bstIteratorFree(BSTIterator* iter)
     return;
 }
 
-void bstRemove(BST* tree, int value)
+void bstDelete(BST* tree, int value)
 {
 
     // node search
