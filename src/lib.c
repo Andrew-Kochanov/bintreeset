@@ -76,7 +76,7 @@ bool bstContains(BST* tree, int value)
 
 void bstNodeFree(BSTNode** node)
 {
-    if (node == nullptr) {
+    if (*node == nullptr) {
         return;
     }
 
@@ -261,7 +261,7 @@ void bstIteratorFree(BSTIterator* iter)
     return;
 }
 
-void bstRemove(BST* tree, int value)
+void bstDelete(BST* tree, int value)
 {
 
     // node search
@@ -290,11 +290,12 @@ void bstRemove(BST* tree, int value)
 
         if (parent == nullptr) {
             tree->root = nullptr;
-        }
-        if (parent->left == current) {
-            parent->left = nullptr;
         } else {
-            parent->right = nullptr;
+            if (parent->left == current) {
+                parent->left = nullptr;
+            } else {
+                parent->right = nullptr;
+            }
         }
 
         free(current);
@@ -322,8 +323,7 @@ void bstRemove(BST* tree, int value)
             parent->right = child;
         }
 
-        if (child != NULL) {
-            parent->right = largest->left;
+        if (child != nullptr) {
             child->parent = parent;
         }
 
@@ -334,12 +334,12 @@ void bstRemove(BST* tree, int value)
     }
 
     // the node has only left child or only right child
-    BSTNode* child = (current->left != NULL) ? current->left : current->right;
+    BSTNode* child = (current->left != nullptr) ? current->left : current->right;
     BSTNode* parent = current->parent;
 
-    if (parent == NULL) {
+    if (parent == nullptr) {
         tree->root = child;
-        child->parent = NULL;
+        child->parent = nullptr;
     } else {
         if (parent->right == current) {
             parent->right = child;
@@ -379,18 +379,24 @@ int bstKthMinInner(const BSTNode* node, int* k)
     if (node == nullptr) {
         return 0;
     }
+    int left = bstKthMinInner(node->left, k);
 
-    bstKthMinInner(node->left, k);
+    // if found in the left
+    if (*k == 0) {
+        return left;
+    }
+
     (*k)--;
     if (*k == 0) {
         return node->value;
     }
+
     return bstKthMinInner(node->right, k);
 }
 
 int bstKthMin(const BST* tree, int k)
 {
-    if ((bstSize(tree) < k) || (k <= 0)) {
+    if (k <= 0 || (size_t)k > bstSize(tree)) {
         return 0;
     }
     return bstKthMinInner(tree->root, &k);
@@ -413,4 +419,15 @@ bool bstIsValid(const BST* tree)
         return true;
     }
     return bstIsValidInner(tree->root, INT_MIN, INT_MAX);
+}
+
+// create bst
+BST* newBST(void)
+{
+    BST* tree = malloc(sizeof(BST));
+    if (tree) {
+        tree->root = NULL;
+        tree->cardinality = 0;
+    }
+    return tree;
 }
