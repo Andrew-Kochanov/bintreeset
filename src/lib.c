@@ -379,20 +379,6 @@ int bstKthMinInner(const BSTNode* node, int* k)
     if (node == nullptr) {
         return 0;
     }
-
-    bstKthMinInner(node->left, k);
-    (*k)--;
-    if (*k == 0) {
-        return node->value;
-    }
-    return bstKthMinInner(node->right, k);
-}
-
-int bstKthMinInner(const BSTNode* node, int* k)
-{
-    if (node == nullptr) {
-        return 0;
-    }
     int left = bstKthMinInner(node->left, k);
 
     // if found in the left
@@ -410,7 +396,7 @@ int bstKthMinInner(const BSTNode* node, int* k)
 
 int bstKthMin(const BST* tree, int k)
 {
-    if ((bstSize(tree) < k) || (k <= 0)) {
+    if (k <= 0 || (size_t)k > bstSize(tree)) {
         return 0;
     }
     return bstKthMinInner(tree->root, &k);
